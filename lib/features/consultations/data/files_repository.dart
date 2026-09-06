@@ -115,46 +115,57 @@ class FilesRepository {
       case 'image/jpeg':
       case 'image/jpg':
       case 'image/pjpeg':
-        return const _WebImageInfo('.jpg', DioMediaType('image', 'jpeg'));
+        return _WebImageInfo('.jpg', DioMediaType('image', 'jpeg'));
       case 'image/png':
-        return const _WebImageInfo('.png', DioMediaType('image', 'png'));
+        return _WebImageInfo('.png', DioMediaType('image', 'png'));
       case 'image/webp':
-        return const _WebImageInfo('.webp', DioMediaType('image', 'webp'));
+        return _WebImageInfo('.webp', DioMediaType('image', 'webp'));
       case 'image/gif':
-        return const _WebImageInfo('.gif', DioMediaType('image', 'gif'));
+        return _WebImageInfo('.gif', DioMediaType('image', 'gif'));
       case 'image/heic':
       case 'image/heic-sequence':
-        return const _WebImageInfo('.heic', DioMediaType('image', 'heic'));
+        return _WebImageInfo('.heic', DioMediaType('image', 'heic'));
       case 'image/heif':
       case 'image/heif-sequence':
-        return const _WebImageInfo('.heif', DioMediaType('image', 'heif'));
+        return _WebImageInfo('.heif', DioMediaType('image', 'heif'));
     }
 
     if (_hasPrefix(bytes, const [0xff, 0xd8, 0xff])) {
-      return const _WebImageInfo('.jpg', DioMediaType('image', 'jpeg'));
+      return _WebImageInfo('.jpg', DioMediaType('image', 'jpeg'));
     }
-    if (_hasPrefix(bytes, const [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) {
-      return const _WebImageInfo('.png', DioMediaType('image', 'png'));
+    if (_hasPrefix(
+      bytes,
+      const [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
+    )) {
+      return _WebImageInfo('.png', DioMediaType('image', 'png'));
     }
     if (bytes.length >= 12 &&
         _matchesAt(bytes, 0, const [0x52, 0x49, 0x46, 0x46]) &&
         _matchesAt(bytes, 8, const [0x57, 0x45, 0x42, 0x50])) {
-      return const _WebImageInfo('.webp', DioMediaType('image', 'webp'));
+      return _WebImageInfo('.webp', DioMediaType('image', 'webp'));
     }
     if (bytes.length >= 6 &&
-        (_matchesAt(bytes, 0, const [0x47, 0x49, 0x46, 0x38, 0x37, 0x61]) ||
-            _matchesAt(bytes, 0, const [0x47, 0x49, 0x46, 0x38, 0x39, 0x61]))) {
-      return const _WebImageInfo('.gif', DioMediaType('image', 'gif'));
+        (_matchesAt(
+              bytes,
+              0,
+              const [0x47, 0x49, 0x46, 0x38, 0x37, 0x61],
+            ) ||
+            _matchesAt(
+              bytes,
+              0,
+              const [0x47, 0x49, 0x46, 0x38, 0x39, 0x61],
+            ))) {
+      return _WebImageInfo('.gif', DioMediaType('image', 'gif'));
     }
     if (bytes.length >= 12 &&
         _matchesAt(bytes, 4, const [0x66, 0x74, 0x79, 0x70])) {
       final brand = String.fromCharCodes(bytes.sublist(8, 12));
       const heicBrands = {'heic', 'heix', 'hevc', 'hevx', 'heim', 'heis'};
       if (heicBrands.contains(brand)) {
-        return const _WebImageInfo('.heic', DioMediaType('image', 'heic'));
+        return _WebImageInfo('.heic', DioMediaType('image', 'heic'));
       }
       if (brand == 'mif1' || brand == 'msf1') {
-        return const _WebImageInfo('.heif', DioMediaType('image', 'heif'));
+        return _WebImageInfo('.heif', DioMediaType('image', 'heif'));
       }
     }
 
