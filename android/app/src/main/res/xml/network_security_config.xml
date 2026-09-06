@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  HTTPS is enforced for all traffic by default. Cleartext (HTTP) is permitted
+  only for the local development backend reachable from the Android emulator
+  (10.0.2.2 -> host machine's localhost). Production hosts must use HTTPS.
+  When testing against a machine on the LAN from a physical device, add that
+  IP as another <domain> below.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false" />
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+    </domain-config>
+</network-security-config>
