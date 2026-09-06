@@ -3,18 +3,16 @@
 /// The API host can be overridden at build/run time without touching code:
 ///   flutter run --dart-define=API_HOST=http://192.168.1.20:5093
 ///
-/// Defaults target the ScanSkin backend as it runs in development
-/// (`http://localhost:5093`). On the Android emulator the host machine's
-/// `localhost` is reached through the special alias `10.0.2.2`, which is why
-/// that is the default here. For a physical device, pass your machine's LAN IP
-/// via the `API_HOST` define.
+/// Keep the default aligned with the development host that was already working
+/// for this project before the consultation reliability fixes. Android emulator
+/// or physical-device hosts can still be supplied explicitly through API_HOST.
 class AppConfig {
   AppConfig._();
 
   /// Root host of the backend (no `/api` suffix, no trailing slash).
   static const String host = String.fromEnvironment(
     'API_HOST',
-    defaultValue: 'http://10.0.2.2:5093',
+    defaultValue: 'https://localhost:7250',
   );
 
   /// Base URL for all REST calls.
