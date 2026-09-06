@@ -67,6 +67,8 @@ class FilesRepository {
       '.png' => DioMediaType('image', 'png'),
       '.webp' => DioMediaType('image', 'webp'),
       '.gif' => DioMediaType('image', 'gif'),
+      '.heic' => DioMediaType('image', 'heic'),
+      '.heif' => DioMediaType('image', 'heif'),
       _ => DioMediaType('application', 'octet-stream'),
     };
   }

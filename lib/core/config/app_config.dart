@@ -14,7 +14,7 @@ class AppConfig {
   /// Root host of the backend (no `/api` suffix, no trailing slash).
   static const String host = String.fromEnvironment(
     'API_HOST',
-    defaultValue: 'https://localhost:7250',
+    defaultValue: 'http://10.0.2.2:5093',
   );
 
   /// Base URL for all REST calls.
