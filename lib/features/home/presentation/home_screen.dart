@@ -10,6 +10,7 @@ import 'package:skanskin_app/features/consultations/presentation/widgets/consult
 import 'package:skanskin_app/features/consultations/state/consultations_providers.dart';
 import 'package:skanskin_app/shared/widgets/app_button.dart';
 import 'package:skanskin_app/shared/widgets/app_card.dart';
+import 'package:skanskin_app/shared/widgets/app_fade_in.dart';
 import 'package:skanskin_app/shared/widgets/brand_sheet.dart';
 import 'package:skanskin_app/shared/widgets/skin_image.dart';
 
@@ -63,20 +64,31 @@ class HomeScreen extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _StartConsultationSection(
-                          onStart: () =>
-                              context.push(Routes.createConsultation),
+                        AppFadeIn(
+                          child: _StartConsultationSection(
+                            onStart: () =>
+                                context.push(Routes.createConsultation),
+                          ),
                         ),
                         const SizedBox(height: AppDimens.s16),
-                        _ConsultationsNavigation(
-                          onTap: () => context.go(Routes.consultations),
+                        AppFadeIn(
+                          delay: const Duration(milliseconds: 70),
+                          child: _ConsultationsNavigation(
+                            onTap: () => context.go(Routes.consultations),
+                          ),
                         ),
                         const SizedBox(height: AppDimens.s32),
-                        _LatestHeader(
-                          onSeeAll: () => context.go(Routes.consultations),
+                        AppFadeIn(
+                          delay: const Duration(milliseconds: 130),
+                          child: _LatestHeader(
+                            onSeeAll: () => context.go(Routes.consultations),
+                          ),
                         ),
                         const SizedBox(height: AppDimens.s12),
-                        const _LatestConsultations(),
+                        const AppFadeIn(
+                          delay: Duration(milliseconds: 180),
+                          child: _LatestConsultations(),
+                        ),
                       ],
                     ),
                   ),
@@ -203,7 +215,7 @@ class _StartConsultationSection extends StatelessWidget {
     return AppCard(
       color: AppColors.surfaceTint,
       showBorder: false,
-      showShadow: false,
+      showShadow: true,
       padding: const EdgeInsets.all(AppDimens.s20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

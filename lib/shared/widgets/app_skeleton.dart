@@ -3,7 +3,8 @@ import 'package:skanskin_app/core/theme/app_colors.dart';
 import 'package:skanskin_app/core/theme/app_dimens.dart';
 import 'package:skanskin_app/shared/widgets/app_card.dart';
 
-/// A gently pulsing placeholder block that respects reduced-motion settings.
+/// A placeholder block with a soft shimmer sweep that respects reduced-motion
+/// settings (falling back to a calm static tint).
 class Skeleton extends StatefulWidget {
   const Skeleton({
     super.key,
@@ -30,7 +31,7 @@ class _SkeletonState extends State<Skeleton>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1300),
     );
   }
 
@@ -41,11 +42,9 @@ class _SkeletonState extends State<Skeleton>
         MediaQuery.maybeOf(context)?.disableAnimations ?? false;
 
     if (_animationsDisabled) {
-      _controller
-        ..stop()
-        ..value = 0.75;
+      _controller.stop();
     } else if (!_controller.isAnimating) {
-      _controller.repeat(reverse: true);
+      _controller.repeat();
     }
   }
 
@@ -61,20 +60,50 @@ class _SkeletonState extends State<Skeleton>
       height: widget.height,
       width: widget.width,
       decoration: BoxDecoration(
-        color: AppColors.surfaceSubtle,
+        color: AppColors.skeletonBase,
         borderRadius: widget.borderRadius,
       ),
     );
 
     if (_animationsDisabled) return block;
 
-    return FadeTransition(
-      opacity: Tween<double>(
-        begin: 0.58,
-        end: 0.92,
-      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut)),
-      child: block,
+    return ClipRRect(
+      borderRadius: widget.borderRadius,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return ShaderMask(
+            blendMode: BlendMode.srcATop,
+            shaderCallback: (bounds) => LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: const [
+                AppColors.skeletonBase,
+                AppColors.skeletonHighlight,
+                AppColors.skeletonBase,
+              ],
+              stops: const [0.35, 0.5, 0.65],
+              transform: _SweepTransform(_controller.value * 2 - 1),
+            ).createShader(bounds),
+            child: child,
+          );
+        },
+        child: block,
+      ),
     );
+  }
+}
+
+/// Slides a gradient horizontally across its bounds; the highlight band is
+/// off-screen at both extremes so the repeat loop resets invisibly.
+class _SweepTransform extends GradientTransform {
+  const _SweepTransform(this.slidePercent);
+
+  final double slidePercent;
+
+  @override
+  Matrix4 transform(Rect bounds, {TextDirection? textDirection}) {
+    return Matrix4.translationValues(bounds.width * slidePercent, 0, 0);
   }
 }
 

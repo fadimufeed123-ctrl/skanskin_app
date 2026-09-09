@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../core/theme/app_elevation.dart';
+import 'pressable_scale.dart';
 
 enum AppButtonVariant {
   primary,
@@ -118,6 +120,21 @@ class AppButton extends StatelessWidget {
       ),
     );
 
+    Widget visual = full
+        ? SizedBox(width: double.infinity, child: button)
+        : button;
+
+    final shadow = _shadowFor(variant, interactionBlocked);
+    if (shadow != null) {
+      visual = DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: AppDimens.brControl,
+          boxShadow: shadow,
+        ),
+        child: visual,
+      );
+    }
+
     return Semantics(
       button: true,
       enabled: !interactionBlocked,
@@ -127,12 +144,21 @@ class AppButton extends StatelessWidget {
       child: ExcludeSemantics(
         child: IgnorePointer(
           ignoring: loading,
-          child: full
-              ? SizedBox(width: double.infinity, child: button)
-              : button,
+          child: PressableScale(enabled: !interactionBlocked, child: visual),
         ),
       ),
     );
+  }
+
+  /// A soft lift for the two emphasis variants only, so the primary action
+  /// clearly stands out. Suppressed while disabled or loading.
+  static List<BoxShadow>? _shadowFor(AppButtonVariant variant, bool blocked) {
+    if (blocked) return null;
+    return switch (variant) {
+      AppButtonVariant.primary => AppElevation.brand,
+      AppButtonVariant.danger => AppElevation.sm,
+      _ => null,
+    };
   }
 
   static ({

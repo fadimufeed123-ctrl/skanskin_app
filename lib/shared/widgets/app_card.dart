@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:skanskin_app/core/theme/app_colors.dart';
 import 'package:skanskin_app/core/theme/app_dimens.dart';
+import 'package:skanskin_app/core/theme/app_elevation.dart';
+import 'package:skanskin_app/shared/widgets/pressable_scale.dart';
 
 /// Mobile counterpart of MVC's white `.card.shadow-sm` surface.
 class AppCard extends StatelessWidget {
@@ -29,15 +31,7 @@ class AppCard extends StatelessWidget {
       color: color,
       borderRadius: borderRadius,
       border: showBorder ? Border.all(color: AppColors.divider) : null,
-      boxShadow: showShadow
-          ? [
-              BoxShadow(
-                color: AppColors.shadow,
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ]
-          : null,
+      boxShadow: showShadow ? AppElevation.card : null,
     );
 
     if (onTap == null) {
@@ -46,19 +40,21 @@ class AppCard extends StatelessWidget {
 
     return Semantics(
       button: true,
-      child: DecoratedBox(
-        decoration: decoration,
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: borderRadius,
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: onTap,
+      child: PressableScale(
+        child: DecoratedBox(
+          decoration: decoration,
+          child: Material(
+            color: Colors.transparent,
             borderRadius: borderRadius,
-            overlayColor: WidgetStatePropertyAll(
-              AppColors.primary.withValues(alpha: 0.08),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: borderRadius,
+              overlayColor: WidgetStatePropertyAll(
+                AppColors.primary.withValues(alpha: 0.08),
+              ),
+              child: Padding(padding: padding, child: child),
             ),
-            child: Padding(padding: padding, child: child),
           ),
         ),
       ),

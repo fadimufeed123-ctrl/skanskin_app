@@ -72,4 +72,8 @@ class AppColors {
   /// Bootstrap's `shadow-sm`: rgba(0, 0, 0, .075).
   static const Color shadow = Color(0x13000000);
   static const Color panelShadow = Color(0x24005F5B);
+
+  // Loading shimmer: a calm base with a slightly brighter sweep highlight.
+  static const Color skeletonBase = Color(0xFFE7EFF1);
+  static const Color skeletonHighlight = Color(0xFFF6FBFC);
 }

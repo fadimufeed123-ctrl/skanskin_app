@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skanskin_app/core/theme/app_colors.dart';
 import 'package:skanskin_app/core/theme/app_dimens.dart';
+import 'package:skanskin_app/core/theme/app_motion.dart';
+import 'package:skanskin_app/shared/widgets/pressable_scale.dart';
 
 /// Mobile counterpart of the MVC sidebar: white surface, teal active item,
 /// compact line icons, and the same Almarai label hierarchy.
@@ -120,38 +122,44 @@ class _NavItem extends StatelessWidget {
       label: spec.label,
       onTap: onTap,
       child: ExcludeSemantics(
-        child: InkWell(
-          onTap: onTap,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AnimatedContainer(
-                duration: MediaQuery.disableAnimationsOf(context)
-                    ? Duration.zero
-                    : const Duration(milliseconds: 160),
-                width: 48,
-                height: 30,
-                decoration: BoxDecoration(
-                  color: selected ? AppColors.primarySoft : Colors.transparent,
-                  borderRadius: AppDimens.brFull,
+        child: PressableScale(
+          child: InkWell(
+            onTap: onTap,
+            overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnimatedContainer(
+                  duration: AppMotion.reduced(context)
+                      ? Duration.zero
+                      : const Duration(milliseconds: 200),
+                  curve: AppMotion.standard,
+                  width: 48,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? AppColors.primarySoft
+                        : Colors.transparent,
+                    borderRadius: AppDimens.brFull,
+                  ),
+                  child: Icon(
+                    selected ? spec.activeIcon : spec.icon,
+                    size: 21,
+                    color: iconColor,
+                  ),
                 ),
-                child: Icon(
-                  selected ? spec.activeIcon : spec.icon,
-                  size: 21,
-                  color: iconColor,
+                const SizedBox(height: 4),
+                Text(
+                  spec.label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    height: 18 / 12,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
+                    color: labelColor,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                spec.label,
-                style: TextStyle(
-                  fontSize: 12,
-                  height: 18 / 12,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
-                  color: labelColor,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:skanskin_app/app/main_shell.dart';
 import 'package:skanskin_app/app/providers.dart';
 import 'package:skanskin_app/app/routes.dart';
+import 'package:skanskin_app/core/theme/app_motion.dart';
 import 'package:skanskin_app/features/auth/presentation/login_screen.dart';
 import 'package:skanskin_app/features/auth/presentation/register_screen.dart';
 import 'package:skanskin_app/features/auth/state/auth_controller.dart';
@@ -58,12 +59,18 @@ final Provider<GoRouter> goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.splash, builder: (_, __) => const SplashScreen()),
       GoRoute(
         path: Routes.onboarding,
-        builder: (_, __) => const OnboardingScreen(),
+        pageBuilder: (context, state) =>
+            _fadeThroughPage(state, const OnboardingScreen()),
       ),
-      GoRoute(path: Routes.login, builder: (_, __) => const LoginScreen()),
+      GoRoute(
+        path: Routes.login,
+        pageBuilder: (context, state) =>
+            _fadeThroughPage(state, const LoginScreen()),
+      ),
       GoRoute(
         path: Routes.register,
-        builder: (_, __) => const RegisterScreen(),
+        pageBuilder: (context, state) =>
+            _fadeThroughPage(state, const RegisterScreen()),
       ),
 
       // Bottom-nav shell: the three tabbed destinations.
@@ -102,12 +109,14 @@ final Provider<GoRouter> goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.createConsultation,
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (_, __) => const CreateConsultationScreen(),
+        pageBuilder: (context, state) =>
+            _fadeThroughPage(state, const CreateConsultationScreen()),
       ),
       GoRoute(
         path: Routes.personalInfo,
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (_, __) => const PersonalInfoScreen(),
+        pageBuilder: (context, state) =>
+            _fadeThroughPage(state, const PersonalInfoScreen()),
       ),
       GoRoute(
         path: Routes.consultationDetail,
@@ -116,14 +125,42 @@ final Provider<GoRouter> goRouterProvider = Provider<GoRouter>((ref) {
           final id = int.tryParse(state.pathParameters['id'] ?? '');
           return id == null || id <= 0 ? Routes.consultations : null;
         },
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final id = int.parse(state.pathParameters['id']!);
-          return ConsultationDetailScreen(id: id);
+          return _fadeThroughPage(state, ConsultationDetailScreen(id: id));
         },
       ),
     ],
   );
 });
+
+/// A calm fade-through page transition: incoming content fades in while
+/// settling up from a subtle scale, and reverses on pop. Direction-agnostic, so
+/// it reads correctly in RTL, and it collapses to no motion when the user has
+/// requested reduced motion.
+CustomTransitionPage<void> _fadeThroughPage(GoRouterState state, Widget child) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    transitionDuration: AppMotion.medium,
+    reverseTransitionDuration: AppMotion.base,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      if (AppMotion.reduced(context)) return child;
+      final entrance = CurvedAnimation(
+        parent: animation,
+        curve: AppMotion.emphasized,
+        reverseCurve: AppMotion.standard,
+      );
+      return FadeTransition(
+        opacity: entrance,
+        child: ScaleTransition(
+          scale: Tween<double>(begin: 0.98, end: 1).animate(entrance),
+          child: child,
+        ),
+      );
+    },
+  );
+}
 
 /// Bridges Riverpod's [authControllerProvider] to go_router's
 /// [GoRouter.refreshListenable]: any change to auth state prompts the router to

@@ -119,6 +119,7 @@ class MonogramAvatar extends StatelessWidget {
       decoration: BoxDecoration(
         color: background,
         borderRadius: AppDimens.brControl,
+        border: Border.all(color: foreground.withValues(alpha: 0.10)),
       ),
       child: resolved.isEmpty
           ? label

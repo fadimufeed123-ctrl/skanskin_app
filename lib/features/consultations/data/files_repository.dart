@@ -133,10 +133,16 @@ class FilesRepository {
     if (_hasPrefix(bytes, const [0xff, 0xd8, 0xff])) {
       return _WebImageInfo('.jpg', DioMediaType('image', 'jpeg'));
     }
-    if (_hasPrefix(
-      bytes,
-      const [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
-    )) {
+    if (_hasPrefix(bytes, const [
+      0x89,
+      0x50,
+      0x4e,
+      0x47,
+      0x0d,
+      0x0a,
+      0x1a,
+      0x0a,
+    ])) {
       return _WebImageInfo('.png', DioMediaType('image', 'png'));
     }
     if (bytes.length >= 12 &&
@@ -145,16 +151,8 @@ class FilesRepository {
       return _WebImageInfo('.webp', DioMediaType('image', 'webp'));
     }
     if (bytes.length >= 6 &&
-        (_matchesAt(
-              bytes,
-              0,
-              const [0x47, 0x49, 0x46, 0x38, 0x37, 0x61],
-            ) ||
-            _matchesAt(
-              bytes,
-              0,
-              const [0x47, 0x49, 0x46, 0x38, 0x39, 0x61],
-            ))) {
+        (_matchesAt(bytes, 0, const [0x47, 0x49, 0x46, 0x38, 0x37, 0x61]) ||
+            _matchesAt(bytes, 0, const [0x47, 0x49, 0x46, 0x38, 0x39, 0x61]))) {
       return _WebImageInfo('.gif', DioMediaType('image', 'gif'));
     }
     if (bytes.length >= 12 &&

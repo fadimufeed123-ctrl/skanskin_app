@@ -9,6 +9,7 @@ import 'package:skanskin_app/app/routes.dart';
 import 'package:skanskin_app/core/network/api_exception.dart';
 import 'package:skanskin_app/core/theme/app_colors.dart';
 import 'package:skanskin_app/core/theme/app_dimens.dart';
+import 'package:skanskin_app/core/theme/app_motion.dart';
 import 'package:skanskin_app/core/utils/formatters.dart';
 import 'package:skanskin_app/core/utils/validators.dart';
 import 'package:skanskin_app/features/doctors/data/models/doctor.dart';
@@ -1815,14 +1816,10 @@ class _ResultDialog extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                height: 48,
-                width: 48,
-                decoration: BoxDecoration(
-                  color: accentSoft,
-                  borderRadius: AppDimens.brControl,
-                ),
-                child: Icon(icon, size: 24, color: accent),
+              _PoppingIconChip(
+                icon: icon,
+                accent: accent,
+                accentSoft: accentSoft,
               ),
               const SizedBox(height: AppDimens.s16),
               Semantics(
@@ -1879,6 +1876,81 @@ class _ResultDialog extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// The result dialog's status icon, popped in with a gentle scale + fade so the
+/// outcome (success or failure) lands with a moment of confidence. Static under
+/// reduced motion.
+class _PoppingIconChip extends StatefulWidget {
+  const _PoppingIconChip({
+    required this.icon,
+    required this.accent,
+    required this.accentSoft,
+  });
+
+  final IconData icon;
+  final Color accent;
+  final Color accentSoft;
+
+  @override
+  State<_PoppingIconChip> createState() => _PoppingIconChipState();
+}
+
+class _PoppingIconChipState extends State<_PoppingIconChip>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: AppMotion.slow,
+  );
+
+  bool _started = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started) return;
+    _started = true;
+    if (AppMotion.reduced(context)) {
+      _controller.value = 1;
+    } else {
+      _controller.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final chip = Container(
+      height: 56,
+      width: 56,
+      decoration: BoxDecoration(
+        color: widget.accentSoft,
+        borderRadius: AppDimens.brControl,
+      ),
+      child: Icon(widget.icon, size: 28, color: widget.accent),
+    );
+
+    if (AppMotion.reduced(context)) return chip;
+
+    return ScaleTransition(
+      scale: Tween<double>(
+        begin: 0.6,
+        end: 1,
+      ).animate(CurvedAnimation(parent: _controller, curve: AppMotion.pop)),
+      child: FadeTransition(
+        opacity: CurvedAnimation(
+          parent: _controller,
+          curve: const Interval(0, 0.5, curve: Curves.easeOut),
+        ),
+        child: chip,
       ),
     );
   }
